@@ -2,6 +2,7 @@
 
 use pyo3::prelude::*;
 use pyo3::import_exception;
+// check https://pyo3.rs/v0.11.1/migration.html on how to fix this mess
 
 use weld;
 

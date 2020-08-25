@@ -9,9 +9,16 @@ libc = "0.2.0"
 weld = { path = "../weld" }
 
 [dependencies.pyo3]
-version = "0.8.0"
+version = "0.11.1"
 features = ["extension-module"]
 
 [lib]
 name = "weld_python"
 crate-type = ["cdylib"]
+
+
+[target.x86_64-apple-darwin]
+rustflags = [
+  "-C", "link-arg=-undefined",
+  "-C", "link-arg=dynamic_lookup",
+]
