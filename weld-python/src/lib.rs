@@ -56,22 +56,20 @@ impl WeldType {
     }
 }
 
-#[pyproto]
-impl pyo3::class::basic::PyObjectProtocol for WeldType {
-    fn __str__(&self) -> PyResult<String> {
-        Ok(self.ty.to_string())
-    }
-}
+// #[pyproto]
+// impl pyo3::class::basic::PyObjectProtocol for WeldType {
+//     fn __str__(&self) -> PyResult<String> {
+//         Ok(self.ty.to_string())
+//     }
+// }
 
 #[pymethods]
 impl WeldConf {
     #[new]
-    fn new(obj: &PyRawObject) {
-        obj.init({
-            WeldConf {
-                conf: weld::WeldConf::new(),
-            }
-        });
+    fn new() -> Self {
+        WeldConf {
+            conf: weld::WeldConf::new(),
+        }
     }
 
     fn get(&self, key: String) -> PyResult<String> {
@@ -93,13 +91,10 @@ impl WeldConf {
 #[pymethods]
 impl WeldContext {
     #[new]
-    fn new(obj: &PyRawObject, conf: &WeldConf) -> PyResult<()> {
-        obj.init({
-            WeldContext {
-                context: weld::WeldContext::new(&conf.conf).to_py()?,
-            }
-        });
-        Ok(())
+    fn new(conf: &WeldConf) -> Self {
+        WeldContext {
+            context: weld::WeldContext::new(&conf.conf).to_py()?,
+        }
     }
 
     fn memory_usage(&self) -> PyResult<i64> {
@@ -110,14 +105,11 @@ impl WeldContext {
 #[pymethods]
 impl WeldModule {
     #[new]
-    fn new(obj: &PyRawObject, code: String, conf: &WeldConf) -> PyResult<()> {
+    fn new(code: String, conf: &WeldConf) -> Self {
         let module = weld::WeldModule::compile(code, &conf.conf).to_py()?;
-        obj.init({
-            WeldModule {
-                module
-            }
-        });
-        Ok(())
+        WeldModule {
+            module
+        }
     }
 
     unsafe fn run(&self, context: &mut WeldContext, value: &WeldValue) -> PyResult<WeldValue> {
@@ -140,12 +132,10 @@ impl WeldValue {
 #[pymethods]
 impl WeldValue {
     #[new]
-    fn new(obj: &PyRawObject, pointer: usize) {
-        obj.init({
-            WeldValue {
-                value: weld::WeldValue::new_from_data(pointer as _)
-            }
-        });
+    fn new(pointer: usize) -> Self {
+        WeldValue {
+            value: weld::WeldValue::new_from_data(pointer as _)
+        }
     }
 
     fn context(&self) -> PyResult<()> {
